@@ -29,7 +29,6 @@ def load_job_from_db():
     else:
       print(myRow['song_artist'])
 
-load_job_from_db()
 # def add_application_to_db(job_id, data):
 #   with engine.connect() as conn:
 #     query = text("INSERT INTO applications (job_id, full_name, email, linkedin_url, education," +  

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import os
 import flask
-from database import load_jobs_from_db, load_job_from_db, add_application_to_db
+from database import load_job_from_db
 import json
 from json import JSONEncoder
 app = flask.Flask(__name__)
@@ -25,10 +25,8 @@ def index():
 
 @bp.route("/home")
 def hello_jovian():
-    jobs = load_jobs_from_db()
     return render_template(
-      'home.html', 
-      jobs=jobs,
+      'home.html'
     )
 
 app.register_blueprint(bp)
