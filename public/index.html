@@ -1,43 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatiable" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authorization Flow</title>
+</head>
+<body>
+  <div id="login">
+    <h1>Learning Authorization Flow with Spotify</h1>
+    <a href="/login">Login with Spotify</a>
+  </div>
+  <div id="logged-in">
+    <h1>Logged in with Authorization Flow</h1>
+    <button id="refresh-token">Get a new token!</button>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.2.min.js"></script>
+  <script>
+    function getHashParams() {
+      let hashParams = {};
+      var e, r = /([^&;=]+)=?([^&;]*)/g,
+          q = window.location.hash.substring(1);
+      while ( e = r.exec(q)) {
+         hashParams[e[1]] = decodeURIComponent(e[2]);
+      }
+      return hashParams;
+    };
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    let params = getHashParams();
+    let access_token = params.access_token,
+        refresh_token = params.refresh_token,
+        error = params.error;
+    if(error) {
+      alert('There was an error during the authentication')
+    } else {
+      if(access_token) {
+        $('#login').hide();
+        $('#logged-in').show();
+      } else {
+        $('#login').show();
+        $('#logged-in').hide();
+      };
+    };
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+    document.getElementById('refresh-token').addEventListener('click', function() {
+      $.ajax({
+        url: '/refresh_token',
+        data: {
+          'refresh_token': refresh_token
+        }
+      }).done(function(data) {
+        access_token = data.access_token;
+        console.log(`new access token: ${access_token}`)
+      });
+    }, false);
+  </script>
+</body>
 </html>

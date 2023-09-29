@@ -29,6 +29,12 @@ def hello_jovian():
       'home.html'
     )
 
+@bp.route("/oops")
+def lmao():
+    return render_template(
+      'oops.html'
+    )
+
 app.register_blueprint(bp)
 
 app.run()
