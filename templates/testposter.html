@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            /* Can't create a new image with existing images using stricly html, so don't even try. 
+            Would preferably like to try using python to avoid using javascript, so let's try that*/
+        </style>
+    </head>
+    <body>
+        <h1>
+            Welcome to your posters!
+        </h1>
+        
+        <!-- part of the javascript solution-->
+        <!-- <canvas id="imageCanvas" width="400" height="800"></canvas> -->
+
+    <script>
+        /* Doing it like this is a very real possibility, but let's try python as I am much more familiar with it :) */
+        // window.onload = function() {
+        //     var canvas = document.getElementById('imageCanvas');
+        //     var context = canvas.getContext('2d');
+
+        //     var image1 = new Image();
+        //     image1.src = 'https://i.scdn.co/image/ab67616d0000b273c1156c6f6dedd4b9bdf89428';
+        //     image1.onload = function() {
+        //         context.drawImage(image1, 0, 0, 400, 400); // Draw the first image
+        //     };
+
+        //     var image2 = new Image();
+        //     image2.src = 'https://i.scdn.co/image/ab67616d0000b273f6549a3f99e338b94d7ddc08';
+        //     image2.onload = function() {
+        //          // Set the transparency for the second image
+        //         context.drawImage(image2, 0, 400, 400, 400); // Draw the second image
+        //     };
+        // };
+        
+    </script>
+        <h1>Combined Image</h1>
+        <img src="data:image/png;base64,{{ image_data|b64encode }}" alt="Combined Image">
+    </body>
+</html>

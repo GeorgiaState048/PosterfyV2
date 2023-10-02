@@ -1,12 +1,17 @@
 from flask import Flask, render_template, jsonify, request
 import os
 import flask
-from database import load_job_from_db
+from PIL import Image
+import io
 import json
 from json import JSONEncoder
+import urllib.request
 import base64
 import requests
 from datetime import datetime, timedelta
+# from database import load_job_from_db
+
+
 app = flask.Flask(__name__)
 
 # set up a separate route to serve the index.html file generated
@@ -50,9 +55,10 @@ def get_spotify_access_token(client_id, client_secret):
         "grant_type": "client_credentials",
     }
 
+    print("about to make request")
     # Make the token request
     response = requests.post(token_url, headers=headers, data=data)
-
+    print("made request")
     # Check if the request was successful (status code 200)
     if response.status_code == 200:
         # Parse the JSON response to get the access token
@@ -76,22 +82,75 @@ client_id = "a2b8b16af30f4e1f9bf9b5a86ee8862b"
 client_secret = "877d125158854158b128e63d13a7cfdb"
 
 # Get the access token
-access_token = get_spotify_access_token(client_id, client_secret)
 
 def test_request(token):
-    album_id = "3xybjP7r2VsWzwvDQipdM0"
-    user_endpoint = "https://api.spotify.com/v1/albums/" + album_id
+    user_endpoint = "https://api.spotify.com/v1/browse/new-releases?country=US&locale=en-US%2Cen%3Bq%3D0.9&offset=0&limit=20"
     response = requests.get(
         user_endpoint,
         headers={
             "Authorization": "Bearer " + token,
         },
+        timeout=10
     )
     response_json = response.json()
-    print(response_json["images"])
+    new_release = response_json["albums"]["items"]
 
-test_request(access_token)
+@bp.route("/poster")
+def get_album_covers():
+    """Get new album releases and display them on poster page"""
+    token = get_spotify_access_token(client_id, client_secret)
+    user_endpoint = "https://api.spotify.com/v1/browse/new-releases?country=US&locale=en-US%2Cen%3Bq%3D0.9&offset=0&limit=20"
+    response = requests.get(
+        user_endpoint,
+        headers={
+            "Authorization": "Bearer " + token,
+        },
+        timeout=10
+    )
+    response_json = response.json()
+    new_release = response_json["albums"]["items"]
+    for i in new_release:
+        print(i["images"][0]["url"])
+    return render_template(
+        'poster.html',
+        new_release=new_release,
+        len = len(new_release)
+    )
 
-# app.register_blueprint(bp)
+def create_combined_image():
+    # Open the images
+    image1 = Image.open(requests.get("https://i.scdn.co/image/ab67616d0000b273c1156c6f6dedd4b9bdf89428", stream=True, timeout=10).raw)
+    image2 = Image.open(requests.get("https://i.scdn.co/image/ab67616d0000b273f6549a3f99e338b94d7ddc08", stream=True, timeout=10).raw)
 
-# app.run()
+    # Ensure both images have the same size
+    image2 = image2.resize(image1.size)
+
+    # Create a new image with the same size as the input images
+    new_image = Image.new("RGBA", image1.size)
+
+    # Paste the first image onto the new image
+    new_image.paste(image1, (0, 0))
+
+    # Paste the second image with transparency
+    new_image.paste(image2, (100, 100), mask=image2)
+
+    # Save the result to a BytesIO object
+    image_io = io.BytesIO()
+    new_image.save(image_io, format="PNG")
+    image_io.seek(0)
+
+    return image_io
+
+@bp.route("/testposter")
+def test_poster():
+    combined_images = create_combined_image()
+    return flask.render_template(
+        "testposter.html",
+        image_data=combined_images.read()
+    )
+
+# test_request(access_token)
+
+app.register_blueprint(bp)
+
+app.run()

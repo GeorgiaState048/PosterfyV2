@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            /* Add some basic styling to the images and containers */
+            /* Puts them all in a vertical row and each picture is still it's own (need to have one clicable image containing all the covers) */
+            /* .image-container {
+                margin-bottom: 20px;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            } */
+        </style>
+    </head>
+    <body>
+        <h1>
+            Welcome to your posters!
+        </h1>
+        {%for i in range(0, 4)%}
+            <li>{{new_release[i]["name"]}}</li>
+            <!-- <img src="{{new_release[i]['images'][0]['url']}}"> </img> -->
+        {%endfor%}
+        <div class="image-container">
+            <h2>Group 1</h2>
+            <img src="{{new_release[0]['images'][0]['url']}}" alt="Image 1">
+            <img src="{{new_release[1]['images'][0]['url']}}" alt="Image 2">
+            <img src="{{new_release[2]['images'][0]['url']}}" alt="Image 3">
+            <img src="{{new_release[3]['images'][0]['url']}}" alt="Image 4">
+        </div>
+    </body>
+</html>
